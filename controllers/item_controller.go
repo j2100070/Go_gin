@@ -13,6 +13,8 @@ type IItemController interface {
 	Create(ctx *gin.Context)
 	FindAll(ctx *gin.Context)
 	FindByID(ctx *gin.Context)
+	BulkCreate(ctx *gin.Context)
+	DeleteAll(ctx *gin.Context)
 }
 
 type ItemController struct {
@@ -63,4 +65,22 @@ func (c ItemController) FindByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"data": item})
+}
+
+func (c *ItemController) BulkCreate(ctx *gin.Context) {
+	err := c.service.BulkCreate(1000000)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(201, gin.H{"message": "1000000 items created"})
+}
+
+func (c *ItemController) DeleteAll(ctx *gin.Context) {
+	err := c.service.DeleteAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "All items deleted successfully"})
 }
